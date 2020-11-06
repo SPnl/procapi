@@ -1,0 +1,6 @@
+name = Procurius API
+description =  Reusable Procurios API functionality and settings.
+core = 7.x
+package = sprbs
+dependencies[] = sprbs
+dependencies[] = oauth2_client

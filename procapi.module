@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * Define api functionality for Procurios usable by other modules.
+ */
+
+/**
+ * Push contact to procurios.
+ *
+ * Data fields defined by spwebformsync_contact_data_fields().
+ *
+ * Data: array()
+ *   keys:
+ *     - contact_id
+ *     - name
+ *     - first_name
+ *     - middle_name
+ *     - last_name
+ *     - email
+ *     - telephone
+ *     - street
+ *     - house_number
+ *     - house_number_addition
+ *     - postal_code
+ *     - locality
+ *
+ */
+
+/**
+ * Implements hook_init().
+ */
+function procapi_init() {
+  module_load_include("inc", "procapi", "procapi.oauth_client_fix");
+  module_load_include("inc", "procapi", "procapi");
+  define("PROCAPI_OAUTH_TOKEN_PATH", '/l/oauth2/token');
+  define("PROCAPI_API_REGISTRATION_SET_PATH", '/l/profile_api/registrationset');
+
+  // Check if module is configured.
+  $server_domain = variable_get('procapi_procurios_server_domain');
+  $client_id = variable_get('procapi_oauth_client_id');
+  $client_secret = variable_get('procapi_oauth_client_secret');
+  $scope = variable_get('procapi_oauth_scope', '');
+
+  if (
+    empty($server_domain) ||
+    empty($client_id) ||
+    empty($client_secret) ||
+    empty($scope)
+  ) {
+    drupal_set_message('De procapi module is nog niet ingesteld: <a href="/admin/config/sp/procapi/settings">instellen</a>.', 'warning');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ * @return array Menu items
+ */
+
+function procapi_menu() {
+  $items = array();
+
+  $items['admin/config/sp/procapi'] = array(
+    'title' => 'Procurios API',
+    'page callback'  => 'drupal_get_form',
+    'page arguments' => array('procapi_settings_form'),
+    'access callback' => 'sprbs_access_check',
+    'file' => 'procapi.admin.inc',
+  );
+
+  $items['admin/config/sp/procapi/settings'] = array(
+    'title' => 'Instellingen',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'access callback' => 'sprbs_access_check',
+  );
+
+  $items['admin/config/sp/procapi/test'] = array(
+    'title' => 'Test',
+    'type' => MENU_LOCAL_TASK,
+    'page callback'  => 'drupal_get_form',
+    'page arguments' => array('procapi_test_form'),
+    'file' => 'procapi.test.inc',
+    'access callback' => 'sprbs_access_check',
+  );
+
+  return $items;
+}
