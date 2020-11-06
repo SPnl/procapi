@@ -32,8 +32,10 @@
 function procapi_init() {
   module_load_include("inc", "procapi", "procapi.oauth_client_fix");
   module_load_include("inc", "procapi", "procapi");
-  define("PROCAPI_OAUTH_TOKEN_PATH", '/l/oauth2/token');
-  define("PROCAPI_API_REGISTRATION_SET_PATH", '/l/profile_api/registrationset');
+  module_load_include("inc", "procapi", "procapi.profile_api");
+  module_load_include("inc", "procapi", "procapi.sp_api");
+  module_load_include("inc", "procapi", "procapi.oauth2");
+  module_load_include("inc", "procapi", "procapi.meeting2_api");
 
   // Check if module is configured.
   $server_domain = variable_get('procapi_procurios_server_domain');

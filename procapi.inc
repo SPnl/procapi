@@ -1,40 +1,52 @@
 <?php
 
 /**
- * Get oauth2 client token.
+ * Perform api request.
  */
-function procapi_get_oauth2_client_token() {
-  $server_domain = variable_get('procapi_procurios_server_domain');
-  $client_id = variable_get('procapi_oauth_client_id');
-  $client_secret = variable_get('procapi_oauth_client_secret');
-  $scope = variable_get('procapi_oauth_scope', '');
-
-  if (
-    !empty($server_domain) &&
-    !empty($client_id) &&
-    !empty($client_secret) &&
-    !empty($scope)
-  ) {
-    $oauth2_config = array(
-      'token_endpoint' => 'https://' . $server_domain . PROCAPI_OAUTH_TOKEN_PATH,
-      'auth_flow' => 'client-credentials',
-      'client_id' => $client_id,
-      'client_secret' => $client_secret,
-      'scope' => $scope,
+function procapi_perform_request($path, $method, $accept_header, &$error, $headers = NULL, $data = NULL) {
+  if (empty($headers)) {
+    $token = procapi_get_oauth2_client_token(); 
+    $headers = array(
+      'Content-Type' => 'application/json',
+      'Accept' => $accept_header,
+      'Accept-Language' => 'en-US,en;q=0.5',
+      'Authorization' => 'Bearer ' . $token,
     );
-
-    try {
-      $oauth2_client = new OAuth2\ProcClient($oauth2_config, $client_id);
-      $access_token = $oauth2_client->getAccessToken();
-    }
-    catch (Exception $e) {
-      drupal_set_message($e->getMessage(), 'error');
-    } 
-    if (!empty($access_token)) {
-      return $access_token;
-    }
   }
-  return FALSE;
+  $options = array(
+    'method' => $method,
+    'headers' => $headers,
+  );
+  if (!empty($data)) {
+    $options['data'] = $data;
+  }
+  $server_domain = variable_get('procapi_procurios_server_domain');
+  $url = 'https://' . $server_domain . $path;
+
+  $result = drupal_http_request($url, $options);
+  //dpm($result);
+
+  if ($result->code != 200) {
+    $error = $result;
+    return FALSE;
+  }
+
+  
+  if (procapi_is_json($result->data)) {
+    $response = drupal_json_decode($result->data);
+  }
+  else {
+    $response = $result->data;
+  }
+  return $response;
+}
+
+/**
+ * Check if string is json.
+ */
+function procapi_is_json($string) {
+  json_decode($string);
+  return (json_last_error() == JSON_ERROR_NONE);
 }
 
 /**
@@ -60,166 +72,6 @@ function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
   $title = preg_replace('#[^|]*\|$#', '', $title);
 }
 
-/**
- * Get form schema fields
- */
-function procapi_get_proc_form_schema_contact_fields($form_id) {
-  $schema = procapi_get_proc_form_schema($form_id);
-  $properties = $schema[$form_id]['properties'];
-  $raw_fields = array();
-  $key = '';
-  $title = '';
-  procapi_flatten_properties($properties, $raw_fields, $key, $title);
-  foreach($raw_fields as $key => $title) {
-    $fields[$key] = str_replace('|', ' - ', $title);
-  }
-  return $fields;
-}
-
-/**
- * Get api form schema.
- */
-function procapi_get_proc_form_schema($form_id) {
-  $schema = &drupal_static(__FUNCTION__);
-  if (!isset($schema[$form_id])) {
-    $schema[$form_id] = NULL;
-    if ($cache = cache_get('procapi_schema_' . $form_id)) {
-      $schema[$form_id] = $cache->data;
-    }
-    else {
-      // Get registration set.
-      $registration_set = procapi_get_proc_registration_set();
-      $path = $registration_set[$form_id]['_links']['schema']['href'];
-      $method = $registration_set[$form_id]['_links']['schema']['type'];
-      $result = procapi_perform_request($path, $method, $error);
-      if (!empty($result)) {
-        if (is_array($result) && !empty($result['title'])) {
-          $schema[$form_id] = $result;
-          cache_set('procapi_schema_' . $form_id, $schema[$form_id], 'cache', time() + 360);
-        }
-      }
-    }
-  }
-  return $schema;
-}
-
-/**
- * Validate contact api object.
- */
-function procapi_proc_validate_object($object, $form_id, &$error) {
-  // Get registration set.
-  $registration_set = procapi_get_proc_registration_set();
-  $path = $registration_set[$form_id]['_links']['validate']['href'];
-  $method = $registration_set[$form_id]['_links']['validate']['type'];
-  $result = procapi_perform_request($path, $method, $error, NULL, json_encode($object));
-  return $result;
-}
-
-/**
- * Push contact api object.
- */
-function procapi_proc_push_object($object, $form_id, &$error) {
-  // Get registration set.
-  $registration_set = procapi_get_proc_registration_set();
-  $path = $registration_set[$form_id]['_links']['registration']['href'];
-  $method = $registration_set[$form_id]['_links']['registration']['type'];
-  $result = procapi_perform_request($path, $method, $error, NULL, json_encode($object));
-  return $result;
-}
-
-/**
- * Get registration set list.
- */
-function procapi_get_proc_forms_list() {
-  $list = &drupal_static(__FUNCTION__);
-  if (!isset($list)) {
-    $list = array();
-    $registration_set = procapi_get_proc_registration_set();
-    foreach ($registration_set as $registration_form) {
-      $list[$registration_form['id']] = $registration_form['title'];
-    }
-  }
-  return $list;
-}
-
-/**
- * Get registration set.
- */
-function procapi_get_proc_registration_set() {
-  $registration_set = &drupal_static(__FUNCTION__);
-  if (!isset($registration_set)) {
-    $registration_set = array();
-    if ($cache = cache_get('procapi_registration_set')) {
-      $registration_set = $cache->data;
-    }
-    else {
-      $token = procapi_get_oauth2_client_token();
-      if (!empty($token)) {
-        // Get registration set.
-        $server_domain = variable_get('procapi_procurios_server_domain');
-        $path = PROCAPI_API_REGISTRATION_SET_PATH;
-        $result = procapi_perform_request($path, 'GET', $error);
-        if (!empty($result)) {
-          if (!empty($result['registrationSet'])) {
-            foreach($result['registrationSet'] as $registration_form) {
-              $registration_set[$registration_form['id']] = $registration_form;
-            }
-            cache_set('procapi_registration_set', $registration_set, 'cache', time() + 360);
-          }
-        }
-      }
-    }
-  }
-  return $registration_set;
-}
-
-/**
- * Perform api request.
- */
-function procapi_perform_request($path, $method, &$error, $headers = NULL, $data = NULL) {
-  if (empty($headers)) {
-    $token = procapi_get_oauth2_client_token(); 
-    $headers = array(
-      'Content-Type' => 'application/json',
-      'Accept' => 'application/vnd.procurios.profile+json; version=1',
-      'Accept-Language' => 'en-US,en;q=0.5',
-      'Authorization' => 'Bearer ' . $token,
-    );
-  }
-  $options = array(
-    'method' => $method,
-    'headers' => $headers,
-  );
-  if (!empty($data)) {
-    $options['data'] = $data;
-  }
-  $server_domain = variable_get('procapi_procurios_server_domain');
-  $url = 'https://' . $server_domain . $path;
-
-  $result = drupal_http_request($url, $options);
-
-  if ($result->code != 200) {
-    $error = $result;
-    return FALSE;
-  }
-
-  
-  if (procapi_is_json($result->data)) {
-    $response = drupal_json_decode($result->data);
-  }
-  else {
-    $response = $result->data;
-  }
-  return $response;
-}
-
-/**
- * Check if string is json.
- */
-function procapi_is_json($string) {
-  json_decode($string);
-  return (json_last_error() == JSON_ERROR_NONE);
-}
 
 /*
  * Mail error to tdgraaff.
@@ -343,5 +195,3 @@ function procapi_check_address_sufficient($data) {
   }
   return FALSE;
 }
-
-

@@ -25,10 +25,12 @@ function procapi_test_form($form, &$form_state) {
 function procapi_test_form_submit($form, &$form_state) {
   $storage = &$form_state['storage'];
 
-  $token = procapi_get_oauth2_client_token();
-  dpm($token);
-  $registration_set = procapi_get_proc_registration_set();
-  dpm($registration_set);
+  //procapi_get_proc_selection_list();
+
+  //$token = procapi_get_oauth2_client_token();
+  //dpm($token);
+  //$registration_set = procapi_get_proc_registration_set();
+  //dpm($registration_set);
   //$schema = procapi_get_proc_form_schema(13);
   //dpm($schema);
   
