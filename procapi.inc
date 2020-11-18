@@ -17,20 +17,30 @@ function procapi_perform_request($path, $method, $accept_header, &$error, $heade
     'method' => $method,
     'headers' => $headers,
   );
-  if (!empty($data)) {
-    $options['data'] = $data;
-  }
+
   $server_domain = variable_get('procapi_procurios_server_domain');
   $url = 'https://' . $server_domain . $path;
 
+  // Set parameters or data.
+  if (!empty($data)) {
+    switch($method) {
+      case 'GET':
+        $url = url($url, array('query' => $data));
+        break;
+
+      case 'POST':
+        $options['data'] = $data;
+        break;
+    }
+  }
+
   $result = drupal_http_request($url, $options);
-  //dpm($result);
 
   if ($result->code != 200) {
     $error = $result;
+    procapi_error('Er is een fout opgetreden bij een Procurios API request.', array('url' => $url, 'options' => $options, 'result' => $result));
     return FALSE;
   }
-
   
   if (procapi_is_json($result->data)) {
     $response = drupal_json_decode($result->data);

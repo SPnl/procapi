@@ -25,7 +25,12 @@ function procapi_test_form($form, &$form_state) {
 function procapi_test_form_submit($form, &$form_state) {
   $storage = &$form_state['storage'];
 
-  //procapi_get_proc_selection_list();
+  //$selection_list = procapi_selection_get_list();
+  //dpm($selection_list);
+  //$selection_list = procapi_selection_get_select_list();
+  //dpm($selection_list);
+  //$relations = procapi_selection_get_relations(7, 1);
+  //dpm($relations);
 
   //$token = procapi_get_oauth2_client_token();
   //dpm($token);
