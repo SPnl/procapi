@@ -6,6 +6,9 @@
 function procapi_perform_request($path, $method, $accept_header, &$error, $headers = NULL, $data = NULL) {
   if (empty($headers)) {
     $token = procapi_get_oauth2_client_token(); 
+    if (empty($token)) {
+      procapi_error('Het was niet mogelijk een token op te halen bij Procurios.', NULL);
+    }
     $headers = array(
       'Content-Type' => 'application/json',
       'Accept' => $accept_header,

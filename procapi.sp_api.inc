@@ -60,17 +60,14 @@ function procapi_selection_get_select_list() {
  * Get relations in selection.
  */
 function procapi_selection_get_relations($selection_id, $page_nr = 1) {
-  $token = procapi_get_oauth2_client_token();
-  if (!empty($token)) {
-    $relations = array();
-    $selection_list = procapi_selection_get_list();
-    if (!empty($selection_list[$selection_id])) {
-      $path = str_replace('[selection_id]', $selection_id, PROCAPI_SELECTION_RELATION_PATH);
-      $parameters = array('page' => $page_nr);
-      $result = procapi_perform_request($path, 'GET', PROCAPI_SELECTION_ACCEPT_HEADER, $error, NULL, $parameters);
-      if (!empty($result)) {
-        $relations = $result;
-      }
+  $relations = array();
+  $selection_list = procapi_selection_get_list();
+  if (!empty($selection_list[$selection_id])) {
+    $path = str_replace('[selection_id]', $selection_id, PROCAPI_SELECTION_RELATION_PATH);
+    $parameters = array('page' => $page_nr);
+    $result = procapi_perform_request($path, 'GET', PROCAPI_SELECTION_ACCEPT_HEADER, $error, NULL, $parameters);
+    if (!empty($result)) {
+      $relations = $result;
     }
   }
   return $relations;
