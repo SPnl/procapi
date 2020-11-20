@@ -37,7 +37,14 @@ function procapi_perform_request($path, $method, $accept_header, &$error, $heade
     }
   }
 
-  $result = drupal_http_request($url, $options);
+  // Retry request three times when error.
+  for ($i = 0; $i < 3; $i++) {
+    $result = drupal_http_request($url, $options);
+    if ($result->code == 200) {
+      break;
+    }
+    sleep(2);
+  }
 
   if ($result->code != 200) {
     $error = $result;
