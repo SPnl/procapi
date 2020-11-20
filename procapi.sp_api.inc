@@ -57,6 +57,23 @@ function procapi_selection_get_select_list() {
 }
 
 /**
+ * Get selection select list.
+ */
+function procapi_selection_get_count() {
+  $selection_list = &drupal_static(__FUNCTION__);
+  if (!isset($selection_list)) {
+    $selection_list = array();
+    $select_list_raw = procapi_selection_get_list();
+    foreach ($select_list_raw as $list_data) {
+      if (isset($list_data['id']) && isset($list_data['numberOfRelations'])) {
+        $selection_list[$list_data['id']] = $list_data['numberOfRelations'];
+      }
+    }
+  }
+  return $selection_list;
+}
+
+/**
  * Get relations in selection.
  */
 function procapi_selection_get_relations($selection_id, $page_nr = 1) {

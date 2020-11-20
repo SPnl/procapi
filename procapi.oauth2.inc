@@ -37,6 +37,7 @@ function procapi_get_oauth2_client_token() {
       return $access_token;
     }
   }
+  drupal_set_message('Failed to get token from Procurios');
   return FALSE;
 }
 
