@@ -73,18 +73,20 @@ function procapi_is_json($string) {
  * Flatten properties.
  */
 function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
-  foreach ($properties as $prop_key => $property) {
-    if (empty($property['type'])) {
-      continue;
-    }
-    if (in_array($property['type'], array('string', 'integer', 'object'))) {
-      if ($property['type'] == 'object' && isset($property['properties'])) {
-        $key = $key . $prop_key . '|';
-        $title = $title . (empty($property['title']) ? $prop_key : $property['title']) . '|';
-        procapi_flatten_properties($property['properties'], $fields, $key, $title);
+  if (!empty($properties)) {
+    foreach ($properties as $prop_key => $property) {
+      if (empty($property['type'])) {
+        continue;
       }
-      else {
-        $fields[$key . $prop_key] = $title . (empty($property['title']) ? $prop_key : $property['title']);
+      if (in_array($property['type'], array('string', 'integer', 'object'))) {
+        if ($property['type'] == 'object' && !empty($property['properties'])) {
+          $key = $key . $prop_key . '|';
+          $title = $title . (empty($property['title']) ? $prop_key : $property['title']) . '|';
+          procapi_flatten_properties($property['properties'], $fields, $key, $title);
+        }
+        else {
+          $fields[$key . $prop_key] = $title . (empty($property['title']) ? $prop_key : $property['title']);
+        }
       }
     }
   }
