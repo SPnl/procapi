@@ -36,6 +36,7 @@ function procapi_init() {
   module_load_include("inc", "procapi", "procapi.sp_api");
   module_load_include("inc", "procapi", "procapi.oauth2");
   module_load_include("inc", "procapi", "procapi.meeting2_api");
+  module_load_include("inc", "procapi", "procapi.postcode_api");
 
   // Check if module is configured.
   $server_domain = variable_get('procapi_procurios_server_domain');
