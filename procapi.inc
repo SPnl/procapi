@@ -40,13 +40,13 @@ function procapi_perform_request($path, $method, $accept_header, &$error, $heade
   // Retry request three times when error.
   for ($i = 0; $i < 3; $i++) {
     $result = drupal_http_request($url, $options);
-    if ($result->code == 200) {
+    if (in_array($result->code, array(200, 204))) {
       break;
     }
     sleep(2);
   }
 
-  if ($result->code != 200) {
+  if (! in_array($result->code, array(200, 204))) {
     $error = $result;
     procapi_error('Er is een fout opgetreden bij een Procurios API request.', array('url' => $url, 'options' => $options, 'result' => $result));
     return FALSE;
