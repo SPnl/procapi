@@ -5,28 +5,6 @@
  */
 
 /**
- * Push contact to procurios.
- *
- * Data fields defined by spwebformsync_contact_data_fields().
- *
- * Data: array()
- *   keys:
- *     - contact_id
- *     - name
- *     - first_name
- *     - middle_name
- *     - last_name
- *     - email
- *     - telephone
- *     - street
- *     - house_number
- *     - house_number_addition
- *     - postal_code
- *     - locality
- *
- */
-
-/**
  * Implements hook_init().
  */
 function procapi_init() {
