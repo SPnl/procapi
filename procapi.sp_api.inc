@@ -50,6 +50,7 @@ function procapi_selection_get_select_list() {
     foreach ($select_list_raw as $list_data) {
       if (isset($list_data['id']) && isset($list_data['name'])) {
         $selection_list[$list_data['id']] = $list_data['name'];
+        natsort($selection_list);
       }
     }
   }
