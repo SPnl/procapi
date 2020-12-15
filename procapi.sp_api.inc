@@ -90,3 +90,33 @@ function procapi_selection_get_relations($selection_id, $page_nr = 1) {
   }
   return $relations;
 }
+
+/**
+ * Add relations to selection.
+ */
+function procapi_selection_add_relations($selection_id, $relations) {
+  $selection_list = procapi_selection_get_list();
+  if (!empty($selection_list[$selection_id])) {
+    $path = str_replace('[selection_id]', $selection_id, PROCAPI_SELECTION_RELATION_PATH);
+    $result = procapi_perform_request($path, 'POST', PROCAPI_SELECTION_ACCEPT_HEADER, $error, NULL, $relations);
+    if (empty($error)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Add relations to selection.
+ */
+function procapi_selection_remove_relations($selection_id, $relations) {
+  $selection_list = procapi_selection_get_list();
+  if (!empty($selection_list[$selection_id])) {
+    $path = str_replace('[selection_id]', $selection_id, PROCAPI_SELECTION_RELATION_PATH);
+    $result = procapi_perform_request($path, 'DELETE', PROCAPI_SELECTION_ACCEPT_HEADER, $error, NULL, $relations);
+    if (empty($error)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
