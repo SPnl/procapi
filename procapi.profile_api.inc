@@ -212,12 +212,11 @@ function procapi_registration_get_fields() {
 /**
  * Validate contact api object.
  */
-function procapi_registration_validate_object($object) {
-  $form_id = variable_get('procpush_api_registration_form');
+function procapi_registration_validate_data_object($object) {
   // Get registration set.
   $registration_set = procapi_registration_get_set();
-  $path = $registration_set[$form_id]['_links']['validate']['href'];
-  $method = $registration_set[$form_id]['_links']['validate']['type'];
+  $path = $registration_set['_links']['validate']['href'];
+  $method = $registration_set['_links']['validate']['type'];
   $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, json_encode($object));
   if (empty($error)) {
     return TRUE;
@@ -228,19 +227,18 @@ function procapi_registration_validate_object($object) {
 /**
  * Push contact api object.
  */
-function procapi_registration_push_object($object) {
-  $form_id = variable_get('procpush_api_registration_form');
+function procapi_registration_push_data_object($object) {
   // Get registration set.
   $registration_set = procapi_registration_get_set();
-  $path = $registration_set[$form_id]['_links']['registration']['href'];
-  $method = $registration_set[$form_id]['_links']['registration']['type'];
+  $path = $registration_set['_links']['registration']['href'];
+  $method = $registration_set['_links']['registration']['type'];
   $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, json_encode($object));
   if (empty($error)) {
     if (!empty($result) && !empty($result['registrationId'])) {
       return $result['registrationId'];
     }
     else {
-      procapi_error('Geen registratie id terug gekregen bij pushen object in registratie api.', $error);
+      procapi_error('Geen registratie id terug gekregen bij pushen object in registratie api.', $result);
     }
   }
   return FALSE;
@@ -249,17 +247,16 @@ function procapi_registration_push_object($object) {
 /**
  * Get relation id.
  */
-function procapi_registration_get_relation_id() {
-  $form_id = variable_get('procpush_api_registration_form');
+function procapi_registration_get_relation_id($registration_id) {
   $registration_set = procapi_registration_get_set();
-  $path = $registration_set[$form_id]['_links']['registration']['href'] . '/' . $registration_id;
+  $path = $registration_set['_links']['registration']['href'] . '/' . $registration_id;
   $result = procapi_perform_request($path, 'GET', PROCAPI_PROFILE_ACCEPT_HEADER, $error);
   if (empty($error)) {
     if (!empty($result) && !empty($result['relationId'])) {
       return $result['relationId'];
     }
     else {
-      procapi_error('Geen relatie id terug gekregen bij opvragen op basis registratie id.', $error);
+      procapi_error('Geen relatie id terug gekregen bij opvragen op basis registratie id.', $result);
     }
   }
   return FALSE;
