@@ -167,7 +167,7 @@ function procapi_profile_update_relation($relation_id, $data_object) {
   // Get profile set.
   $path = str_replace('[form_id]', $form_id, PROCAPI_PROFILE_RELATION_PROFILE_PATH);
   $path = str_replace('[relation_id]', $relation_id, $path);
-  $result = procapi_perform_request($path, 'POST', PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, json_encode($data_object));
+  $result = procapi_perform_request($path, 'POST', PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, $data_object);
   if (empty($error)) {
     return TRUE;
   }
@@ -217,7 +217,7 @@ function procapi_registration_validate_data_object($object) {
   $registration_set = procapi_registration_get_set();
   $path = $registration_set['_links']['validate']['href'];
   $method = $registration_set['_links']['validate']['type'];
-  $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, json_encode($object));
+  $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, $object);
   if (empty($error)) {
     return TRUE;
   }
@@ -232,15 +232,15 @@ function procapi_registration_push_data_object($object) {
   $registration_set = procapi_registration_get_set();
   $path = $registration_set['_links']['registration']['href'];
   $method = $registration_set['_links']['registration']['type'];
-  $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, json_encode($object));
+  $result = procapi_perform_request($path, $method, PROCAPI_PROFILE_ACCEPT_HEADER, $error, NULL, $object);
   if (empty($error)) {
-    if (!empty($result) && !empty($result['registrationId'])) {
-      return $result['registrationId'];
-    }
-    else {
-      procapi_error('Geen registratie id terug gekregen bij pushen object in registratie api.', $result);
+    if (!empty($result)) {
+      if (!empty($result['relationId'])) {
+        return $result['relationId'];
+      }
     }
   }
+  procapi_error('Geen relatie id terug gekregen bij pushen object in registratie api.', $result);
   return FALSE;
 }
 

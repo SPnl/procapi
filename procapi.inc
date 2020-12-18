@@ -35,7 +35,7 @@ function procapi_perform_request($path, $method, $accept_header, &$error, $heade
         break;
 
       case 'POST':
-        $options['data'] = $data;
+        $options['data'] = json_encode($data);
         break;
     }
   }
