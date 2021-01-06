@@ -56,7 +56,7 @@ function procapi_test_form_submit($form, &$form_state) {
   //$fields = procapi_profile_get_fields();
   //dpm($fields);
   //$relation_id = 68426;
-  //$result = procapi_profile_get_relation_profile($relation_id, $error);
+  //$result = procapi_profile_get_relation_profile($relation_id);
   //dpm($result);
 
   /*

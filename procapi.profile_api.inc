@@ -115,7 +115,7 @@ function procapi_get_fields($type) {
  * Get profile set.
  */
 function procapi_profile_get_set() {
-  $form_id = variable_get('procpush_api_profile_form');
+  $form_id = variable_get('procapi_profile_form');
   $set = procapi_get_set('profile');
   return $set['profile'][$form_id];
 }
@@ -132,7 +132,7 @@ function procapi_profile_get_forms() {
  * Get profile api form schema.
  */
 function procapi_profile_get_form_schema() {
-  $form_id = variable_get('procpush_api_profile_form');
+  $form_id = variable_get('procapi_profile_form');
   $schema = procapi_get_form_schema('profile');
   return $schema['profile'][$form_id];
 }
@@ -149,7 +149,7 @@ function procapi_profile_get_fields() {
  * Get relation profile.
  */
 function procapi_profile_get_relation_profile($relation_id) {
-  $form_id = variable_get('procpush_api_profile_form');
+  $form_id = variable_get('procapi_profile_form');
   $path = str_replace('[form_id]', $form_id, PROCAPI_PROFILE_RELATION_PROFILE_PATH);
   $path = str_replace('[relation_id]', $relation_id, $path);
   $result = procapi_perform_request($path, 'GET', PROCAPI_PROFILE_ACCEPT_HEADER, $error);
@@ -163,7 +163,7 @@ function procapi_profile_get_relation_profile($relation_id) {
  * Update user profile.
  */
 function procapi_profile_update_relation($relation_id, $data_object) {
-  $form_id = variable_get('procpush_api_profile_form');
+  $form_id = variable_get('procapi_profile_form');
   // Get profile set.
   $path = str_replace('[form_id]', $form_id, PROCAPI_PROFILE_RELATION_PROFILE_PATH);
   $path = str_replace('[relation_id]', $relation_id, $path);
