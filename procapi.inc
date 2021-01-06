@@ -110,5 +110,5 @@ function procapi_error($error_message, $debug_data) {
     ),
   );
   watchdog('procapi', $message['content'], $message['data'], WATCHDOG_ERROR);
-  drupal_mail('spwebformsync', 'error', 'tdgraaff@sp.nl', language_default(), $message, 'webmaster@sp.nl');
+  drupal_mail('procapi', 'error', 'tdgraaff@sp.nl', language_default(), $message, 'webmaster@sp.nl');
 }
