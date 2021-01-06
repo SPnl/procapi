@@ -80,7 +80,7 @@ function procapi_settings_form($form, &$form_state) {
     $api_registration_form_list = procapi_registration_get_forms();
     $form['procapi_registration_form'] = array(
       '#type' => 'select',
-      '#title' => 'Kies het procurios API profiel formulier voor het ophalen van bestaande contactgegevens uit Procurios',
+      '#title' => 'Kies het procurios API profiel formulier voor het inschieten van nieuwe contactgegevens in Procurios',
       '#options' => $api_registration_form_list,
       '#default_value' => $registration_form_id,
       '#required' => TRUE,
