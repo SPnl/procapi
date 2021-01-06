@@ -60,35 +60,39 @@ function procapi_settings_form($form, &$form_state) {
   );
 
   if (!empty($server_domain) && !empty($client_id) && !empty($client_secret) && !empty($scope)) {
-    // Get profile form from procurios.
-    $profile_form_id = variable_get('procapi_profile_form');
-    $api_profile_form_list = procapi_profile_get_forms();
-    $form['procapi_profile_form'] = array(
-      '#type' => 'select',
-      '#title' => 'Kies het procurios API profiel formulier voor het ophalen van bestaande contactgegevens uit Procurios',
-      '#options' => $api_profile_form_list,
-      '#default_value' => $profile_form_id,
-      '#required' => TRUE,
-      '#ajax' => array(
-        'wrapper' => 'procapi_ajax_form',
-        'callback' => 'procapi_ajax_form',
-      ),
-    );
+    if (strpos($scope, 'profile/profile') !== FALSE) {
+      // Get profile form from procurios.
+      $profile_form_id = variable_get('procapi_profile_form');
+      $api_profile_form_list = procapi_profile_get_forms();
+      $form['procapi_profile_form'] = array(
+        '#type' => 'select',
+        '#title' => 'Kies het procurios API profiel formulier voor het ophalen van bestaande contactgegevens uit Procurios',
+        '#options' => $api_profile_form_list,
+        '#default_value' => $profile_form_id,
+        '#required' => TRUE,
+        '#ajax' => array(
+          'wrapper' => 'procapi_ajax_form',
+          'callback' => 'procapi_ajax_form',
+        ),
+      );
+    }
 
-    // Get registration form from procurios.
-    $registration_form_id = variable_get('procapi_registration_form');
-    $api_registration_form_list = procapi_registration_get_forms();
-    $form['procapi_registration_form'] = array(
-      '#type' => 'select',
-      '#title' => 'Kies het procurios API profiel formulier voor het inschieten van nieuwe contactgegevens in Procurios',
-      '#options' => $api_registration_form_list,
-      '#default_value' => $registration_form_id,
-      '#required' => TRUE,
-      '#ajax' => array(
-        'wrapper' => 'procapi_ajax_form',
-        'callback' => 'procapi_ajax_form',
-      ),
-    );
+    if (strpos($scope, 'profile/registration') !== FALSE) {
+      // Get registration form from procurios.
+      $registration_form_id = variable_get('procapi_registration_form');
+      $api_registration_form_list = procapi_registration_get_forms();
+      $form['procapi_registration_form'] = array(
+        '#type' => 'select',
+        '#title' => 'Kies het procurios API profiel formulier voor het inschieten van nieuwe contactgegevens in Procurios',
+        '#options' => $api_registration_form_list,
+        '#default_value' => $registration_form_id,
+        '#required' => TRUE,
+        '#ajax' => array(
+          'wrapper' => 'procapi_ajax_form',
+          'callback' => 'procapi_ajax_form',
+        ),
+      );
+    }
   }
 
   return system_settings_form($form);
