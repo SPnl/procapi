@@ -67,7 +67,7 @@ function procapi_get_forms($type) {
  */
 function procapi_get_form_schema($type) {
   $schema = &drupal_static(__FUNCTION__);
-  $form_id = variable_get('procpush_api_' . $type . '_form');
+  $form_id = variable_get('procapi_' . $type . '_form');
   if (!isset($schema[$type][$form_id])) {
     $schema[$type][$form_id] = NULL;
     if ($cache = cache_get('procapi_' . $type . '_schema_' . $form_id)) {
@@ -95,7 +95,7 @@ function procapi_get_form_schema($type) {
  */
 function procapi_get_fields($type) {
   $schema = procapi_get_form_schema($type);
-  $form_id = variable_get('procpush_api_' . $type . '_form');
+  $form_id = variable_get('procapi_' . $type . '_form');
   if (!empty($schema[$type]) && !empty($schema[$type][$form_id])) {
     $fields = array();
     $properties = $schema[$type][$form_id]['properties'];
@@ -179,7 +179,7 @@ function procapi_profile_update_relation($relation_id, $data_object) {
  * Get registration set.
  */
 function procapi_registration_get_set() {
-  $form_id = variable_get('procpush_api_registration_form');
+  $form_id = variable_get('procapi_registration_form');
   $set = procapi_get_set('registration');
   return $set['registration'][$form_id];
 }
@@ -196,7 +196,7 @@ function procapi_registration_get_forms() {
  * Get registration api form schema.
  */
 function procapi_registration_get_form_schema() {
-  $form_id = variable_get('procpush_api_registration_form');
+  $form_id = variable_get('procapi_registration_form');
   $schema = procapi_get_form_schema('registration');
   return $schema['registration'][$form_id];
 }

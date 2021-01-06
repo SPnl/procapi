@@ -74,6 +74,21 @@ function procapi_settings_form($form, &$form_state) {
         'callback' => 'procapi_ajax_form',
       ),
     );
+
+    // Get registration form from procurios.
+    $registration_form_id = variable_get('procapi_registration_form');
+    $api_registration_form_list = procapi_registration_get_forms();
+    $form['procapi_registration_form'] = array(
+      '#type' => 'select',
+      '#title' => 'Kies het procurios API profiel formulier voor het ophalen van bestaande contactgegevens uit Procurios',
+      '#options' => $api_registration_form_list,
+      '#default_value' => $registration_form_id,
+      '#required' => TRUE,
+      '#ajax' => array(
+        'wrapper' => 'procapi_ajax_form',
+        'callback' => 'procapi_ajax_form',
+      ),
+    );
   }
 
   return system_settings_form($form);
