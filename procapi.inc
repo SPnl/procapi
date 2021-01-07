@@ -112,3 +112,15 @@ function procapi_error($error_message, $debug_data) {
   watchdog('procapi', $message['content'], $message['data'], WATCHDOG_ERROR);
   //drupal_mail('procapi', 'error', 'tdgraaff@sp.nl', language_default(), $message, 'webmaster@sp.nl');
 }
+
+/**
+ * Get scope list.
+ */
+function procapi_get_scope_list() {
+  return array(
+    'profile/profile' => 'Profile API: Query (and update) existing relation profiles.',
+    'profile/registration' => 'Registration API: Push new or existing contact data to Procurios.',
+    'sp_custom' => 'SP Custom API: Query and update selections | Find information about SP departments.',
+    'postcode' => 'Postcode API: Find address based on postal code and house number.',
+  );
+}

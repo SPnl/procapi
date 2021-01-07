@@ -47,26 +47,29 @@ function procapi_settings_form($form, &$form_state) {
     ),
   );
 
-  $scope = variable_get('procapi_oauth_scope', '');
-  $form['procapi_oauth_scope'] = array(
-    '#type' => 'textfield',
-    '#title' => 'Oauth scope',
-    '#default_value' => $scope,
+  $scope_list = procapi_get_scope_list();
+  $scopes = variable_get('procapi_oauth_scopes');
+  $form['procapi_oauth_scopes'] = array(
+    '#type' => 'checkboxes',
+    '#multiple' => TRUE,
+    '#title' => 'Selecteer de gewenste oauth scope(s)',
     '#required' => TRUE,
+    '#options' => $scope_list,
+    '#default_value' => $scopes,
     '#ajax' => array(
       'wrapper' => 'procapi_ajax_form',
       'callback' => 'procapi_ajax_form',
     ),
   );
 
-  if (!empty($server_domain) && !empty($client_id) && !empty($client_secret) && !empty($scope)) {
-    if (strpos($scope, 'profile/profile') !== FALSE) {
+  if (!empty($server_domain) && !empty($client_id) && !empty($client_secret)) {
+    if (!empty($scopes['profile/profile'])) {
       // Get profile form from procurios.
       $profile_form_id = variable_get('procapi_profile_form');
       $api_profile_form_list = procapi_profile_get_forms();
       $form['procapi_profile_form'] = array(
         '#type' => 'select',
-        '#title' => 'Kies het procurios API profiel formulier voor het ophalen van bestaande contactgegevens uit Procurios',
+        '#title' => 'Procurios profile API form',
         '#options' => $api_profile_form_list,
         '#default_value' => $profile_form_id,
         '#required' => TRUE,
@@ -77,13 +80,13 @@ function procapi_settings_form($form, &$form_state) {
       );
     }
 
-    if (strpos($scope, 'profile/registration') !== FALSE) {
+    if (!empty($scopes['profile/registration'])) {
       // Get registration form from procurios.
       $registration_form_id = variable_get('procapi_registration_form');
       $api_registration_form_list = procapi_registration_get_forms();
       $form['procapi_registration_form'] = array(
         '#type' => 'select',
-        '#title' => 'Kies het procurios API profiel formulier voor het inschieten van nieuwe contactgegevens in Procurios',
+        '#title' => 'Procurios registration API form',
         '#options' => $api_registration_form_list,
         '#default_value' => $registration_form_id,
         '#required' => TRUE,
@@ -120,6 +123,15 @@ function procapi_settings_form_validate($form, &$form_state) {
       variable_set($key, $value);
     }
   }
+
+  // Store oauth scope.
+  foreach ($values['procapi_oauth_scopes'] as $scope) {
+    if (!empty($scope)) {
+      $selected_scopes[] = $scope;
+    }
+  }
+  $procapi_oauth_scope = implode($selected_scopes, ' ');
+  variable_set('procapi_oauth_scope', $procapi_oauth_scope);
 }
 
 /**
