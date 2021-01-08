@@ -25,6 +25,9 @@ function procapi_test_form($form, &$form_state) {
 function procapi_test_form_submit($form, &$form_state) {
   $storage = &$form_state['storage'];
 
+  //$departments = procapi_department_search('3813PK');
+  //dpm($departments);
+
   //$postcode_lookup = procapi_postcode_address_lookup('3813 PK', '101');
   //dpm($postcode_lookup);
 

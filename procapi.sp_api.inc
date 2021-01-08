@@ -4,6 +4,8 @@
 define('PROCAPI_SELECTION_ACCEPT_HEADER', 'application/vnd.procurios.sp_custom+json; version=1');
 define('PROCAPI_SELECTION_LIST_PATH', '/l/sp_api/selection');
 define('PROCAPI_SELECTION_RELATION_PATH', '/l/sp_api/selection/[selection_id]/relation');
+define('PROCAPI_DEPARTMENT_ACCEPT_HEADER', 'application/vnd.procurios.sp_custom+json; version=1');
+define('PROCAPI_DEPARTMENT_PATH', '/l/sp_api/department');
 
 /**
  * Get selection list.
@@ -119,4 +121,17 @@ function procapi_selection_remove_relations($selection_id, $relations) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Get department info.
+ */
+function procapi_department_search($term) {
+  $departments = array();
+  $parameters = array('search' => $term);
+  $result = procapi_perform_request(PROCAPI_DEPARTMENT_PATH, 'GET', PROCAPI_DEPARTMENT_ACCEPT_HEADER, $error, NULL, $parameters);
+  if (!empty($result)) {
+    $departments = $result;
+  }
+  return $departments;
 }
