@@ -88,11 +88,29 @@ function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
       if (in_array($property['type'], array('string', 'integer', 'object'))) {
         if ($property['type'] == 'object' && !empty($property['properties'])) {
           $key = $key . $prop_key . '|';
-          $title = $title . (empty($property['title']) ? $prop_key : $property['title']) . '|';
+          if (!empty($property['title'])) {
+            $title = $title . $property['title'];
+          }
+          elseif (!empty($property['description'])) {
+            $title = $title . $property['description'];
+          }
+          else {
+            $title = $title . $prop_key;
+          }
+          $title .= '|';
           procapi_flatten_properties($property['properties'], $fields, $key, $title);
         }
         else {
-          $fields[$key . $prop_key] = $title . (empty($property['title']) ? $prop_key : $property['title']);
+          if (!empty($property['title'])) {
+            $new_title = $property['title'];
+          }
+          elseif (!empty($property['description'])) {
+            $new_title = $property['description'];
+          }
+          else {
+            $new_title = $prop_key;
+          }
+          $fields[$key . $prop_key] = $title . $new_title;
         }
       }
     }
