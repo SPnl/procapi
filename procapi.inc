@@ -82,36 +82,31 @@ function procapi_is_json($string) {
 function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
   if (!empty($properties)) {
     foreach ($properties as $prop_key => $property) {
-      if (empty($property['type'])) {
-        continue;
-      }
-      if (in_array($property['type'], array('string', 'integer', 'object', 'boolean'))) {
-        if ($property['type'] == 'object' && !empty($property['properties']) && array_values($property['properties'])[0]['type'] != 'boolean') {
-          $key = $key . $prop_key . '|';
-          if (!empty($property['title'])) {
-            $title = $title . $property['title'];
-          }
-          elseif (!empty($property['description'])) {
-            $title = $title . $property['description'];
-          }
-          else {
-            $title = $title . $prop_key;
-          }
-          $title .= '|';
-          procapi_flatten_properties($property['properties'], $fields, $key, $title);
+      if (!empty($property['type']) && $property['type'] == 'object' && !empty($property['properties']) && array_values($property['properties'])[0]['type'] != 'boolean') {
+        $key = $key . $prop_key . '|';
+        if (!empty($property['title'])) {
+          $title = $title . $property['title'];
+        }
+        elseif (!empty($property['description'])) {
+          $title = $title . $property['description'];
         }
         else {
-          if (!empty($property['title'])) {
-            $new_title = $property['title'];
-          }
-          elseif (!empty($property['description'])) {
-            $new_title = $property['description'];
-          }
-          else {
-            $new_title = $prop_key;
-          }
-          $fields[$key . $prop_key] = $title . $new_title;
+          $title = $title . $prop_key;
         }
+        $title .= '|';
+        procapi_flatten_properties($property['properties'], $fields, $key, $title);
+      }
+      else {
+        if (!empty($property['title'])) {
+          $new_title = $property['title'];
+        }
+        elseif (!empty($property['description'])) {
+          $new_title = $property['description'];
+        }
+        else {
+          $new_title = $prop_key;
+        }
+        $fields[$key . $prop_key] = $title . $new_title;
       }
     }
   }
