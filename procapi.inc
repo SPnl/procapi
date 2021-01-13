@@ -85,8 +85,8 @@ function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
       if (empty($property['type'])) {
         continue;
       }
-      if (in_array($property['type'], array('string', 'integer', 'object'))) {
-        if ($property['type'] == 'object' && !empty($property['properties'])) {
+      if (in_array($property['type'], array('string', 'integer', 'object', 'boolean'))) {
+        if ($property['type'] == 'object' && !empty($property['properties']) && array_values($property['properties'])[0]['type'] != 'boolean') {
           $key = $key . $prop_key . '|';
           if (!empty($property['title'])) {
             $title = $title . $property['title'];
