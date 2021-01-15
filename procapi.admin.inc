@@ -12,6 +12,11 @@ function procapi_settings_form($form, &$form_state) {
   $form['#suffix'] = '</div>';
 
   $server_domain = variable_get('procapi_procurios_server_domain', '');
+
+  $form['intro-text'] = array(
+    '#markup' => '<p><strong>Wanneer je een bestaande verbinding wijzigt moet je de Drupal caches legen, en opnieuw inloggen voor deze actief wordt.</strong></p>',
+  );
+
   $form['procapi_procurios_server_domain'] = array(
     '#type' => 'textfield',
     '#title' => 'Procurios server domain',
@@ -62,39 +67,46 @@ function procapi_settings_form($form, &$form_state) {
     ),
   );
 
-  if (!empty($server_domain) && !empty($client_id) && !empty($client_secret)) {
-    if (!empty($scopes['profile/profile'])) {
-      // Get profile form from procurios.
-      $profile_form_id = variable_get('procapi_profile_form');
-      $api_profile_form_list = procapi_profile_get_forms();
-      $form['procapi_profile_form'] = array(
-        '#type' => 'select',
-        '#title' => 'Procurios profile API form',
-        '#options' => $api_profile_form_list,
-        '#default_value' => $profile_form_id,
-        '#required' => TRUE,
-        '#ajax' => array(
-          'wrapper' => 'procapi_ajax_form',
-          'callback' => 'procapi_ajax_form',
-        ),
-      );
+  if (!empty($server_domain) && !empty($client_id) && !empty($client_secret) && !empty($scopes)) {
+    // Check if oauth2 token can be retrieved.
+    $token = procapi_get_oauth2_client_token();
+    if (empty($token)) {
+      drupal_set_message('Er kon geen verbinding gemaakt worden met de Procurios API.', 'warning');
     }
+    else {
+      if (!empty($scopes['profile/profile'])) {
+        // Get profile form from procurios.
+        $profile_form_id = variable_get('procapi_profile_form');
+        $api_profile_form_list = procapi_profile_get_forms();
+        $form['procapi_profile_form'] = array(
+          '#type' => 'select',
+          '#title' => 'Procurios profile API form',
+          '#options' => $api_profile_form_list,
+          '#default_value' => $profile_form_id,
+          '#required' => TRUE,
+          '#ajax' => array(
+            'wrapper' => 'procapi_ajax_form',
+            'callback' => 'procapi_ajax_form',
+          ),
+        );
+      }
 
-    if (!empty($scopes['profile/registration'])) {
-      // Get registration form from procurios.
-      $registration_form_id = variable_get('procapi_registration_form');
-      $api_registration_form_list = procapi_registration_get_forms();
-      $form['procapi_registration_form'] = array(
-        '#type' => 'select',
-        '#title' => 'Procurios registration API form',
-        '#options' => $api_registration_form_list,
-        '#default_value' => $registration_form_id,
-        '#required' => TRUE,
-        '#ajax' => array(
-          'wrapper' => 'procapi_ajax_form',
-          'callback' => 'procapi_ajax_form',
-        ),
-      );
+      if (!empty($scopes['profile/registration'])) {
+        // Get registration form from procurios.
+        $registration_form_id = variable_get('procapi_registration_form');
+        $api_registration_form_list = procapi_registration_get_forms();
+        $form['procapi_registration_form'] = array(
+          '#type' => 'select',
+          '#title' => 'Procurios registration API form',
+          '#options' => $api_registration_form_list,
+          '#default_value' => $registration_form_id,
+          '#required' => TRUE,
+          '#ajax' => array(
+            'wrapper' => 'procapi_ajax_form',
+            'callback' => 'procapi_ajax_form',
+          ),
+        );
+      }
     }
   }
 
