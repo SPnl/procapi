@@ -110,7 +110,13 @@ function procapi_settings_form($form, &$form_state) {
     }
   }
 
-  return system_settings_form($form);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Opslaan',
+    '#name' => 'submit',
+  );
+
+  return $form;
 }
 
 /**
