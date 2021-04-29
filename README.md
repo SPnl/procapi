@@ -1,2 +1,2 @@
 # procapi
-Instellingen: https://personeel.sp.nl/admin/config/sp/procapi
+Instellingen: https://site.sp.nl/admin/config/sp/procapi
