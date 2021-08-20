@@ -69,7 +69,7 @@ function procapi_menu() {
 function procapi_mail($key, &$message, $params) {
   switch ($key) {
   case 'error':
-    $message['subject'] = 'Er is een fout opgetreden bij het verturen van een webforminzending naar Procurios.';
+    $message['subject'] = 'Er is een API fout opgetreden bij het versturen van een webforminzending naar Procurios.';
     $message['body'][] = format_string($params['content'], $params['data']);
     break;
   }

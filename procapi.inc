@@ -116,7 +116,7 @@ function procapi_flatten_properties($properties, &$fields, &$key, &$title) {
 
 
 /*
- * Mail error to tdgraaff.
+ * Mail error to webteam.
  */
 function procapi_error($error_message, $debug_data) {
   global $base_url;
@@ -127,7 +127,7 @@ function procapi_error($error_message, $debug_data) {
     ),
   );
   watchdog('procapi', $message['content'], $message['data'], WATCHDOG_ERROR);
-  drupal_mail('procapi', 'error', 'tdgraaff@sp.nl', language_default(), $message, 'webmaster@sp.nl');
+  drupal_mail('procapi', 'error', 'webteam@sp.nl', language_default(), $message, 'webteam@sp.nl');
 }
 
 /**
